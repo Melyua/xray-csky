@@ -1746,6 +1746,7 @@ CMD4(CCC_Integer,			"hit_anims_tune",						&tune_hit_anims,		0, 1);
 	CMD3(CCC_Mask,		"g_autopickup",			&psActorFlags,	AF_AUTOPICKUP);
 	CMD3(CCC_Mask,		"g_dynamic_music",		&psActorFlags,	AF_DYNAMIC_MUSIC);
 
+	CMD3(CCC_Mask,			"g_quicksaver",			&psActorFlags,	AF_CANSAVE	);
 
 #ifdef DEBUG
 	CMD1(CCC_LuaHelp,				"lua_help");
