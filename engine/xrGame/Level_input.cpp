@@ -172,7 +172,12 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 	if(_curr == kQUICK_SAVE && IsGameTypeSingle())
 	{
-		Console->Execute			("save");
+		if (!psActorFlags.test(AF_CANSAVE))
+		{
+			Console->Execute("save");
+			return;
+		}
+		//Console->Execute			("save");
 		return;
 	}
 	if(_curr == kQUICK_LOAD && IsGameTypeSingle())
