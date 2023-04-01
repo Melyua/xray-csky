@@ -203,7 +203,7 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem, CInventoryItem* pCompareIte
 	}
 	if ( UICost && IsGameTypeSingle() )
 	{
-		sprintf				(str, "%d RU", pInvItem->Cost());		// will be owerwritten in multiplayer
+		sprintf				(str, "%d ", pInvItem->Cost());		// will be owerwritten in multiplayer
 		UICost->SetText		(str);
 		pos.x = UICost->GetWndPos().x;
 		if ( m_complex_desc )
