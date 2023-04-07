@@ -92,6 +92,10 @@ void CCustomOutfit::Load(LPCSTR section)
 	m_fPowerRestoreSpeed		= READ_IF_EXISTS(pSettings, r_float, section, "power_restore_speed",     0.0f );
 	m_fBleedingRestoreSpeed		= READ_IF_EXISTS(pSettings, r_float, section, "bleeding_restore_speed",  0.0f );
 
+	m_fJumpSpeed = READ_IF_EXISTS(pSettings, r_float, section, "jump_speed", 1.f);
+	m_fWalkAccel = READ_IF_EXISTS(pSettings, r_float, section, "walk_accel", 1.f);
+	m_fOverweightWalkK = READ_IF_EXISTS(pSettings, r_float, section, "overweight_walk_k", 1.f);
+
 	if (pSettings->line_exist(section, "nightvision_sect"))
 		m_NightVisionSect = pSettings->r_string(section, "nightvision_sect");
 	else
@@ -321,6 +325,15 @@ bool CCustomOutfit::install_upgrade_impl( LPCSTR section, bool test )
 
 	result |= process_if_exists( section, "artefact_count", &CInifile::r_u32, m_artefact_count, test );
 	clamp( m_artefact_count, (u32)0, (u32)5 );
+
+
+	result |= process_if_exists(section, "jump_speed", &CInifile::r_float, m_fJumpSpeed, test);
+	result |= process_if_exists(section, "walk_accel", &CInifile::r_float, m_fWalkAccel, test);
+	result |= process_if_exists(section, "overweight_walk_k", &CInifile::r_float, m_fOverweightWalkK, test);
+
+	m_fJumpSpeed = READ_IF_EXISTS(pSettings, r_float, section, "jump_speed", 1.f);
+	m_fWalkAccel = READ_IF_EXISTS(pSettings, r_float, section, "walk_accel", 1.f);
+	m_fOverweightWalkK = READ_IF_EXISTS(pSettings, r_float, section, "overweight_walk_k", 1.f);
 
 	return result;
 }

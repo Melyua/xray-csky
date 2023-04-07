@@ -16,6 +16,7 @@
 #include "CharacterPhysicsSupport.h"
 #include "actoreffector.h"
 #include "static_cast_checked.hpp"
+#include "CustomOutfit.h"
 
 #ifdef DEBUG
 #include "phdebug.h"
@@ -135,6 +136,8 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 	mstate_old				= mstate_real;
 	vControlAccel.set		(0,0,0);
 
+	float cur_weight = inventory().TotalWeight();
+
 	if (!(mstate_real&mcFall) && (character_physics_support()->movement()->Environment()==CPHMovementControl::peInAir)) 
 	{
 		m_fFallTime				-=	dt;
@@ -195,6 +198,26 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 			Jump				= m_fJumpSpeed;
 			m_fJumpTime			= s_fJumpTime;
 
+			float jump_k = 0.0;
+			CCustomOutfit* outfit = GetOutfit();
+
+			if (cur_weight >= 25 && mstate_real & mcJump)
+				if (outfit)
+					jump_k = outfit->m_fJumpSpeed - (cur_weight / 25);
+				else
+					jump_k = m_fJumpSpeed - (cur_weight / 25);
+			else
+				if (outfit)
+					jump_k = outfit->m_fJumpSpeed;
+				else
+					jump_k = m_fJumpSpeed;
+
+
+
+			clamp(jump_k, 0.0f, m_fJumpSpeed);
+
+			character_physics_support()->movement()->SetJumpUpVelocity(jump_k);
+
 
 			//уменьшить силу игрока из-за выполненого прыжка
 			if (!GodMode())
@@ -248,7 +271,20 @@ void CActor::g_cl_CheckControls(u32 mstate_wf, Fvector &vControlAccel, float &Ju
 			float	scale			= vControlAccel.magnitude();
 			if(scale>EPS)	
 			{
-				scale	=	m_fWalkAccel/scale;
+				float accel_k = m_fWalkAccel;
+
+				if (cur_weight >= 25)
+				{
+					accel_k -= cur_weight / 6;
+				}
+
+				CCustomOutfit* outfit = GetOutfit();
+				if (outfit)
+					accel_k *= outfit->m_fWalkAccel;
+
+
+				scale = accel_k / scale;
+
 				if (bAccelerated)
 					if (mstate_real&mcBack)
 						scale *= m_fRunBackFactor;
@@ -600,7 +636,6 @@ bool CActor::is_jump()
 }
 
 //максимальный переносимы вес
-#include "CustomOutfit.h"
 float CActor::MaxCarryWeight () const
 {
 	float res = inventory().GetMaxWeight();
