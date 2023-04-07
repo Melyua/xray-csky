@@ -154,9 +154,7 @@ void CWeaponMagazined::FireEnd()
 {
 	inherited::FireEnd();
 
-	CActor	*actor = smart_cast<CActor*>(H_Parent());
-	if(!iAmmoElapsed && actor && GetState()!=eReload) 
-		Reload();
+
 }
 
 void CWeaponMagazined::Reload() 
@@ -184,28 +182,28 @@ bool CWeaponMagazined::TryReload()
 			m_pAmmo = NULL;
 
 		
-		if(IsMisfire() && iAmmoElapsed)
+		if ((IsMisfire() && iAmmoElapsed) || m_pAmmo || unlimited_ammo())
 		{
 			SetPending			(TRUE);
 			SwitchState			(eReload); 
 			return				true;
 		}
 
-		if(m_pAmmo || unlimited_ammo())  
-		{
-			SetPending			(TRUE);
-			SwitchState			(eReload); 
-			return				true;
-		} 
+
 		else for(u32 i = 0; i < m_ammoTypes.size(); ++i) 
 		{
-			m_pAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny( *m_ammoTypes[i] ));
-			if(m_pAmmo) 
-			{ 
-				m_ammoType			= i; 
-				SetPending			(TRUE);
-				SwitchState			(eReload);
-				return				true;
+
+			for (u32 i = 0; i < m_ammoTypes.size(); ++i)
+			{
+				m_pAmmo = smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(*m_ammoTypes[i]));
+				if (m_pAmmo)
+				{
+					m_ammoType = i;
+					SetPending(TRUE);
+					SwitchState(eReload);
+					return true;
+				}
+
 			}
 		}
 
@@ -222,10 +220,14 @@ bool CWeaponMagazined::IsAmmoAvailable()
 	if (smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(*m_ammoTypes[m_ammoType])))
 		return	(true);
 	else
-		for(u32 i = 0; i < m_ammoTypes.size(); ++i)
+	{
+		for (u32 i = 0; i < m_ammoTypes.size(); ++i)
+		{
 			if (smart_cast<CWeaponAmmo*>(m_pInventory->GetAny(*m_ammoTypes[i])))
-				return	(true);
-	return		(false);
+				return true;
+		}
+	}
+	return false;
 }
 
 void CWeaponMagazined::OnMagazineEmpty() 
@@ -668,14 +670,9 @@ void CWeaponMagazined::switch2_Empty()
 {
 	OnZoomOut();
 	
-	if(!TryReload())
-	{
-		OnEmptyClick();
-	}
-	else
-	{
-		inherited::FireEnd();
-	}
+
+	OnEmptyClick();
+
 }
 void CWeaponMagazined::PlayReloadSound()
 {
@@ -729,7 +726,9 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
 	{
 	case kWPN_RELOAD:
 		{
-			if(flags&CMD_START) 
+			if (Actor()->mstate_real & (mcSprint))
+				break;
+			else if (flags & CMD_START)
 				if(iAmmoElapsed < iMagazineSize || IsMisfire()) 
 					Reload();
 		} 
