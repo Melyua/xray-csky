@@ -183,6 +183,98 @@ public:
 	}
 };
 
+
+
+// console commands
+// g_spawn
+class CCC_Spawn : public IConsole_Command {
+public:
+	CCC_Spawn(LPCSTR N) : IConsole_Command(N) { };
+	virtual void Execute(LPCSTR args) {
+		if (!g_pGameLevel) return;
+
+		//#ifndef	DEBUG
+		if (GameID() != eGameIDSingle)
+		{
+			Msg("For this game type entity-spawning is disabled.");
+			return;
+		};
+		//#endif
+
+		if (!pSettings->section_exist(args))
+		{
+			Msg("! Section [%s] isn`t exist...", args);
+			return;
+		}
+
+		char	Name[128];	Name[0] = 0;
+		sscanf(args, "%s", Name);
+		Fvector pos = Actor()->Position();
+		pos.y += 3.0f;
+		Level().g_cl_Spawn(Name, 0xff, M_SPAWN_OBJECT_LOCAL, pos);
+	}
+	virtual void	Info(TInfo& I)
+	{
+		strcpy(I, "name,team,squad,group");
+	}
+};
+// g_spawn
+
+class CCC_Giveinfo : public IConsole_Command {
+public:
+	CCC_Giveinfo(LPCSTR N) : IConsole_Command(N) { };
+	virtual void Execute(LPCSTR info_id) {
+		if (!g_pGameLevel) return;
+
+		char	Name[128];	Name[0] = 0;
+		CActor* actor = smart_cast<CActor*>(Level().CurrentEntity());
+		if (actor)
+			actor->OnReceiveInfo(info_id);
+
+	}
+};
+
+class CCC_Disinfo : public IConsole_Command {
+public:
+	CCC_Disinfo(LPCSTR N) : IConsole_Command(N) { };
+	virtual void Execute(LPCSTR info_id) {
+		if (!g_pGameLevel) return;
+
+		char	Name[128];	Name[0] = 0;
+		CActor* actor = smart_cast<CActor*>(Level().CurrentEntity());
+		if (actor)
+			actor->OnDisableInfo(info_id);
+
+	}
+};
+
+class CCC_Spawn_to_inv : public IConsole_Command {
+public:
+	CCC_Spawn_to_inv(LPCSTR N) : IConsole_Command(N) { };
+	virtual void Execute(LPCSTR args) {
+		if (!g_pGameLevel)
+		{
+			Log("Error: No game level!");
+			return;
+		}
+
+		if (!pSettings->section_exist(args))
+		{
+			Msg("! Section [%s] isn`t exist...", args);
+			return;
+		}
+
+		char	Name[128];	Name[0] = 0;
+		sscanf(args, "%s", Name);
+
+		Level().spawn_item(Name, Actor()->Position(), false, Actor()->ID());
+	}
+	virtual void	Info(TInfo& I)
+	{
+		strcpy(I, "name,team,squad,group");
+	}
+};
+
 // console commands
 class CCC_GameDifficulty : public CCC_Token {
 public:
@@ -1050,7 +1142,7 @@ struct CCC_ClearSmartCastStats : public IConsole_Command {
 };
 #endif
 
-#ifndef MASTER_GOLD
+
 #	include "game_graph.h"
 struct CCC_JumpToLevel : public IConsole_Command {
 	CCC_JumpToLevel(LPCSTR N) : IConsole_Command(N)  {};
@@ -1074,6 +1166,7 @@ struct CCC_JumpToLevel : public IConsole_Command {
 	}
 };
 
+#ifndef MASTER_GOLD
 class CCC_Script : public IConsole_Command {
 public:
 	CCC_Script(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
@@ -1735,13 +1828,17 @@ CMD4(CCC_Integer,			"hit_anims_tune",						&tune_hit_anims,		0, 1);
 #endif // DEBUG
 
 #ifndef MASTER_GOLD
-	CMD1(CCC_JumpToLevel,	"jump_to_level"		);
+
 	CMD3(CCC_Mask,			"g_god",			&psActorFlags,	AF_GODMODE	);
 	CMD3(CCC_Mask,			"g_unlimitedammo",	&psActorFlags,	AF_UNLIMITEDAMMO);
 	CMD1(CCC_Script,		"run_script");
 	CMD1(CCC_ScriptCommand,	"run_string");
 	CMD1(CCC_TimeFactor,	"time_factor");		
 #endif // MASTER_GOLD
+	CMD1(CCC_JumpToLevel, "jump_to_level");
+	CMD1(CCC_Spawn_to_inv, "g_spawn_to_inventory");
+	CMD1(CCC_Giveinfo, "g_info");
+	CMD1(CCC_Disinfo, "d_info");
 
 	CMD3(CCC_Mask,		"g_autopickup",			&psActorFlags,	AF_AUTOPICKUP);
 	CMD3(CCC_Mask,		"g_dynamic_music",		&psActorFlags,	AF_DYNAMIC_MUSIC);
