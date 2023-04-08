@@ -746,7 +746,7 @@ void CWeapon::OnH_B_Chield		()
 	m_set_next_ammoType_on_reload	= u32(-1);
 }
 
-extern u32 hud_adj_mode;
+extern int hud_adj_mode;
 
 void CWeapon::UpdateCL		()
 {
@@ -1683,7 +1683,7 @@ BOOL CWeapon::ParentIsActor	()
 	return EA->cast_actor()!=0;
 }
 
-extern u32 hud_adj_mode;
+extern int hud_adj_mode;
 
 void CWeapon::debug_draw_firedeps()
 {
