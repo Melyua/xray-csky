@@ -157,6 +157,7 @@ public:
 	virtual	float				GetConditionToShow	() const					{return GetCondition();}
 	IC		void				SetCondition		(float val)					{m_fCondition = val;}
 			void				ChangeCondition		(float fDeltaCondition);
+			virtual	void				SetCondition(float fNewCondition) { m_fCondition = fNewCondition; ChangeCondition(0.0f); }
 
 			u32					GetSlot				()  const					{return m_slot;}
 
