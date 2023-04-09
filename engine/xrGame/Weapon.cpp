@@ -378,12 +378,26 @@ void CWeapon::Load		(LPCSTR section)
 
 	m_zoom_params.m_bZoomEnabled		= !!pSettings->r_bool(section,"zoom_enabled");
 	m_zoom_params.m_fZoomRotateTime		= pSettings->r_float(section,"zoom_rotate_time");
-
+	m_allScopeNames.clear();
 	if ( m_eScopeStatus == ALife::eAddonAttachable )
 	{
 		m_sScopeName = pSettings->r_string(section,"scope_name");
 		m_iScopeX = pSettings->r_s32(section,"scope_x");
 		m_iScopeY = pSettings->r_s32(section,"scope_y");
+
+
+		m_allScopeNames.push_back(m_sScopeName);
+		if (pSettings->line_exist(section, "scope_names")) {
+			LPCSTR S = pSettings->r_string(section, "scope_names");
+			if (S && S[0]) {
+				string128 _scopeItem;
+				int count = _GetItemCount(S);
+				for (int it = 0; it < count; ++it) {
+					_GetItem(S, it, _scopeItem);
+					m_allScopeNames.push_back(_scopeItem);
+				}
+			}
+		}
 	}
 
     

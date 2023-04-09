@@ -41,6 +41,8 @@ CInventoryOwner::CInventoryOwner			()
 	m_known_info_registry		= xr_new<CInfoPortionWrapper>();
 	m_tmp_active_slot_num		= NO_ACTIVE_SLOT;
 	m_need_osoznanie_mode		= FALSE;
+
+	m_tmp_next_item_slot = NO_ACTIVE_SLOT;
 }
 
 DLL_Pure *CInventoryOwner::_construct		()
@@ -343,6 +345,10 @@ void CInventoryOwner::OnItemTake			(CInventoryItem *inventory_item)
 			m_tmp_active_slot_num	= NO_ACTIVE_SLOT;
 		}
 	}
+	if (m_tmp_next_item_slot != NO_ACTIVE_SLOT) {
+		inventory().Slot(inventory_item, true);
+		m_tmp_next_item_slot = NO_ACTIVE_SLOT;
+	}
 }
 
 //возвращает текуший разброс стрельбы с учетом движения (в радианах)
@@ -615,4 +621,8 @@ float CInventoryOwner::missile_throw_force		()
 bool CInventoryOwner::use_throw_randomness		()
 {
 	return						(true);
+}
+
+void CInventoryOwner::SetNextItemSlot(u32 slot) {
+	m_tmp_next_item_slot = slot;
 }

@@ -178,6 +178,7 @@ protected:
 
 	//названия секций подключаемых аддонов
 	shared_str		m_sScopeName;
+	std::vector<shared_str> m_allScopeNames;
 	shared_str		m_sSilencerName;
 	shared_str		m_sGrenadeLauncherName;
 

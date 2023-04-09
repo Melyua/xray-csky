@@ -18,6 +18,7 @@
 #include "MPPlayersBag.h"
 #include "ui/UIXmlInit.h"
 #include "ui/UIStatic.h"
+#include "ai_object_location.h"
 
 ENGINE_API	bool	g_dedicated_server;
 
@@ -762,7 +763,7 @@ bool CWeaponMagazined::CanAttach(PIItem pIItem)
 	if(			pScope &&
 				 m_eScopeStatus == ALife::eAddonAttachable &&
 				(m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope) == 0 &&
-				(m_sScopeName == pIItem->object().cNameSect()) )
+				std::find(m_allScopeNames.begin(), m_allScopeNames.end(), pIItem->object().cNameSect()) != m_allScopeNames.end())
        return true;
 	else if(	pSilencer &&
 				m_eSilencerStatus == ALife::eAddonAttachable &&
@@ -807,7 +808,7 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 	if(pScope &&
 	   m_eScopeStatus == ALife::eAddonAttachable &&
 	   (m_flagsAddOnState&CSE_ALifeItemWeapon::eWeaponAddonScope) == 0 &&
-	   (m_sScopeName == pIItem->object().cNameSect()))
+		std::find(m_allScopeNames.begin(), m_allScopeNames.end(), pIItem->object().cNameSect()) != m_allScopeNames.end())
 	{
 		m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonScope;
 		result = true;
@@ -838,8 +839,10 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 			pIItem->object().DestroyObject	();
 		};
 
-		UpdateAddonsVisibility();
-		InitAddons();
+		if (!ScopeRespawn(pIItem)) {
+			UpdateAddonsVisibility();
+			InitAddons();
+		}
 
 		return true;
 	}
@@ -856,8 +859,10 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 	{
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
 		
-		UpdateAddonsVisibility();
-		InitAddons();
+		if (!ScopeRespawn(nullptr)) {
+			UpdateAddonsVisibility();
+			InitAddons();
+		}
 
 		return CInventoryItemObject::Detach(item_section_name, b_spawn_item);
 	}
@@ -1275,4 +1280,59 @@ bool CWeaponMagazined::install_upgrade_impl( LPCSTR section, bool test )
 	}
 
 	return result;
+}
+
+bool CWeaponMagazined::ScopeRespawn(PIItem pIItem) {
+	std::string scope_respawn = "scope_respawn";
+	if (ScopeAttachable() && IsScopeAttached()) {
+		scope_respawn += "_";
+		if (smart_cast<CScope*>(pIItem))
+			scope_respawn += pIItem->object().cNameSect().c_str();
+		else
+			scope_respawn += m_sScopeName.c_str();
+	}
+
+	if (pSettings->line_exist(cNameSect(), scope_respawn.c_str())) {
+		LPCSTR S = pSettings->r_string(cNameSect(), scope_respawn.c_str());
+		if (xr_strcmp(cName().c_str(), S) != 0) {
+			CSE_Abstract* _abstract = Level().spawn_item(S, Position(), ai_location().level_vertex_id(), H_Parent()->ID(), true);
+			CSE_ALifeDynamicObject* sobj1 = alife_object();
+			CSE_ALifeDynamicObject* sobj2 = smart_cast<CSE_ALifeDynamicObject*>(_abstract);
+
+			NET_Packet P;
+			P.w_begin(M_UPDATE);
+			u32 position = P.w_tell();
+			P.w_u16(0);
+			sobj1->STATE_Write(P);
+			u16 size = u16(P.w_tell() - position);
+			P.w_seek(position, &size, sizeof(u16));
+			u16 id;
+			P.r_begin(id);
+			P.r_u16(size);
+			sobj2->STATE_Read(P, size);
+
+			P.w_begin(M_UPDATE);
+			net_Export(P);
+			P.r_begin(id);
+			sobj1->UPDATE_Read(P);
+
+			P.w_begin(M_UPDATE);
+			sobj1->UPDATE_Write(P);
+			P.r_begin(id);
+			sobj2->UPDATE_Read(P);
+
+			auto io = smart_cast<CInventoryOwner*>(H_Parent());
+			auto ii = smart_cast<CInventoryItem*>(this);
+			if (io->inventory().InSlot(ii))
+				io->SetNextItemSlot(ii->GetSlot());
+
+			DestroyObject();
+			sobj2->Spawn_Write(P, TRUE);
+			Level().Send(P, net_flags(TRUE));
+			F_entity_Destroy(_abstract);
+
+			return true;
+		}
+	}
+	return false;
 }
