@@ -288,6 +288,8 @@ public:
 
 	virtual	void			On_B_NotCurrentEntity () {};
 
+	CSE_ALifeDynamicObject* alife_object() const; // alpet: возвращает серверный экземпляр для этого объекта
+
 	// for moving objects
 private:
 			u32				new_level_vertex_id	() const;

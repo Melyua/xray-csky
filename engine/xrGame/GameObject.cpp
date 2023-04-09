@@ -23,6 +23,11 @@
 #include "../xrEngine/igame_level.h"
 #include "level.h"
 #include "script_callback_ex.h"
+#include "game_object_space.h"
+#include "alife_simulator.h"
+#include "alife_object_registry.h"
+#include "Car.h"
+#include "ai_object_location.h"
 #include "MathUtils.h"
 #include "game_cl_base_weapon_usage_statistic.h"
 #include "game_level_cross_table.h"
@@ -69,6 +74,14 @@ CGameObject::~CGameObject		()
 	xr_delete					(m_ai_location);
 	xr_delete					(m_callbacks);
 	xr_delete					(m_ai_obstacle);
+}
+
+CSE_ALifeDynamicObject* CGameObject::alife_object() const
+{
+	const CALifeSimulator* sim = ai().get_alife();
+	if (sim)
+		return sim->objects().object(ID(), true);
+	return NULL;
 }
 
 void CGameObject::init			()
