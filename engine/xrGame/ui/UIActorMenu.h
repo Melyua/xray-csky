@@ -86,6 +86,9 @@ protected:
 	CUIDragDropListEx*			m_pInventoryAutomaticList;
 	CUIDragDropListEx*			m_pInventoryOutfitList;
 	CUIDragDropListEx*			m_pInventoryDetectorList;
+	CUIDragDropListEx*			m_pInventoryKnifeList;
+	CUIDragDropListEx*			m_pInventoryBinocularList;
+	CUIDragDropListEx*			m_pInventoryTorchList;
 	CUIDragDropListEx*			m_pInventoryBagList;
 
 	CUIDragDropListEx*			m_pTradeActorBagList;

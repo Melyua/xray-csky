@@ -22,6 +22,9 @@
 #include "UIMessageBoxEx.h"
 #include "UIPropertiesBox.h"
 #include "UIMainIngameWnd.h"
+#include "WeaponKnife.h"
+#include "WeaponBinoculars.h"
+#include "Torch.h"
 
 void CUIActorMenu::SetActor(CInventoryOwner* io)
 {
@@ -290,6 +293,9 @@ EDDListType CUIActorMenu::GetListType(CUIDragDropListEx* l)
 	if(l==m_pInventoryPistolList)		return iActorSlot;
 	if(l==m_pInventoryOutfitList)		return iActorSlot;
 	if(l==m_pInventoryDetectorList)		return iActorSlot;
+	if(l==m_pInventoryKnifeList)		return iActorSlot;
+	if(l==m_pInventoryBinocularList)	return iActorSlot;
+	if(l==m_pInventoryTorchList)		return iActorSlot;
 	
 
 	if(l==m_pTradeActorBagList)			return iActorBag;
@@ -606,6 +612,9 @@ void CUIActorMenu::ClearAllLists()
 	m_pInventoryDetectorList->ClearAll			(true);
 	m_pInventoryPistolList->ClearAll			(true);
 	m_pInventoryAutomaticList->ClearAll			(true);
+	m_pInventoryKnifeList->ClearAll				(true);
+	m_pInventoryBinocularList->ClearAll			(true);
+	m_pInventoryTorchList->ClearAll				(true);
 
 	m_pTradeActorBagList->ClearAll				(true);
 	m_pTradeActorList->ClearAll					(true);
