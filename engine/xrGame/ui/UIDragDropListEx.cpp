@@ -727,7 +727,7 @@ void CUICellContainer::ReinitSize()
 
 void CUICellContainer::Grow()
 {
-	SetCellsCapacity	(Ivector2().set(m_cellsCapacity.x,m_cellsCapacity.y+1));
+	SetCellsCapacity(Ivector2().set(m_cellsCapacity.x, m_cellsCapacity.y + 1));
 }
 
 void CUICellContainer::Shrink()

@@ -111,7 +111,7 @@ void CUIActorMenu::Construct()
 	float dy = uiXml.ReadAttribFlt("belt_list_over", 0, "dy", 10.0f);
 	for ( u8 i = 1; i < e_af_count; ++i )
 	{
-		pos.y += dy;
+		pos.x += dy;
 		m_belt_list_over[i] = UIHelper::CreateStatic(uiXml, "belt_list_over", this);
 		m_belt_list_over[i]->SetWndPos( pos );
 	}
