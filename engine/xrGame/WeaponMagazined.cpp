@@ -905,9 +905,10 @@ void CWeaponMagazined::LoadAddons()
 void CWeaponMagazined::InitAddons()
 {
 	m_zoom_params.m_fIronSightZoomFactor = READ_IF_EXISTS( pSettings, r_float, cNameSect(), "ironsight_zoom_factor", 50.0f );
+
 	if ( IsScopeAttached() )
 	{
-		shared_str scope_tex_name;
+
 		if ( m_eScopeStatus == ALife::eAddonAttachable )
 		{
 			//m_sScopeName = pSettings->r_string(cNameSect(), "scope_name");
@@ -915,25 +916,32 @@ void CWeaponMagazined::InitAddons()
 			//m_iScopeY	 = pSettings->r_s32(cNameSect(),"scope_y");
 
 			VERIFY( *m_sScopeName );
-			scope_tex_name						= pSettings->r_string(*m_sScopeName, "scope_texture");
+			shared_str scope_tex_name = READ_IF_EXISTS(pSettings, r_string, *m_sScopeName, "scope_texture", "");
 			m_zoom_params.m_fScopeZoomFactor	= pSettings->r_float( *m_sScopeName, "scope_zoom_factor");
+
+			if (scope_tex_name.size() > 0)
+			{
+				m_UIScope = xr_new<CUIWindow>();
+				createWpnScopeXML();
+				CUIXmlInit::InitWindow(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScope);
+			}
+
 		}
 		else if( m_eScopeStatus == ALife::eAddonPermanent )
 		{
-			scope_tex_name						= pSettings->r_string(cNameSect(), "scope_texture");
+			shared_str scope_tex_name = READ_IF_EXISTS(pSettings, r_string, cNameSect(), "scope_texture", "");
 			m_zoom_params.m_fScopeZoomFactor	= pSettings->r_float( cNameSect(), "scope_zoom_factor");
-		}
-		if ( m_UIScope )
-		{
-			xr_delete( m_UIScope );
+
+			if (scope_tex_name.size() > 0)
+			{
+				m_UIScope = xr_new<CUIWindow>();
+				createWpnScopeXML();
+				CUIXmlInit::InitWindow(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScope);
+			}
+
 		}
 
-		if ( !g_dedicated_server )
-		{
-			m_UIScope				= xr_new<CUIWindow>();
-			createWpnScopeXML		();
-			CUIXmlInit::InitWindow	(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScope);
-		}
+
 	}
 	else
 	{
