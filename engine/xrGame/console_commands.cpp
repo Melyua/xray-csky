@@ -196,26 +196,35 @@ public:
 	virtual void Execute(LPCSTR args) {
 		if (!g_pGameLevel) return;
 
-		//#ifndef	DEBUG
+		int count = 1;
+		char	Name[128];	Name[0] = 0;
+		sscanf(args, "%s %d", Name, &count);
+
 		if (GameID() != eGameIDSingle)
 		{
 			Msg("For this game type entity-spawning is disabled.");
 			return;
 		};
-		//#endif
-
-		if (!pSettings->section_exist(args))
+		if (count > 50)
 		{
-			Msg("! Section [%s] isn`t exist...", args);
+			Msg("! [g_spawn]: Cancel the command. Maximum value of the second argument: 50. Cound is: %d", count);
 			return;
 		}
 
-		char	Name[128];	Name[0] = 0;
-		sscanf(args, "%s", Name);
+		if (!pSettings->section_exist(Name))
+		{
+			Msg("! Section [%s] isn`t exist...", Name);
+			return;
+		}
+
+
 		Fvector pos = Actor()->Position();
 		pos.y += 3.0f;
 		if (auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game))
-			tpGame->alife().spawn_item(args, pos, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+		{
+			for (int i = 0; i < count; ++i)
+				tpGame->alife().spawn_item(Name, pos, Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+		}
 	}
 	virtual void	Info(TInfo& I)
 	{
@@ -262,16 +271,24 @@ public:
 			return;
 		}
 
-		if (!pSettings->section_exist(args))
+		int count = 1;
+		char	Name[128];	Name[0] = 0;
+		sscanf(args, "%s %d", Name, &count);
+
+		if (count > 250)
 		{
-			Msg("! Section [%s] isn`t exist...", args);
+			Msg("! [g_spawn_to_inventory]: Cancel the command. Maximum value of the second argument: 250. Cound is: %d", count);
 			return;
 		}
 
-		char	Name[128];	Name[0] = 0;
-		sscanf(args, "%s", Name);
+		if (!pSettings->section_exist(Name))
+		{
+			Msg("! Section [%s] isn`t exist...", Name);
+			return;
+		}
 
-		Level().spawn_item(Name, Actor()->Position(), false, Actor()->ID());
+		for (int i = 0; i < count; ++i)
+			Level().spawn_item(Name, Actor()->Position(), false, Actor()->ID());
 	}
 	virtual void	Info(TInfo& I)
 	{
@@ -1843,6 +1860,7 @@ CMD4(CCC_Integer,			"hit_anims_tune",						&tune_hit_anims,		0, 1);
 	CMD1(CCC_Spawn_to_inv, "g_spawn_to_inventory");
 	CMD1(CCC_Giveinfo, "g_info");
 	CMD1(CCC_Disinfo, "d_info");
+	CMD1(CCC_Spawn, "g_spawn");
 
 	CMD4(CCC_Integer, "hud_adjust_mode", &hud_adj_mode, 0, 5);
 

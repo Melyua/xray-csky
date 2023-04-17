@@ -7473,6 +7473,9 @@
     <ClInclude Include="ui\UIGameTutorial.h">
       <Filter>UI\Tutorial</Filter>
     </ClInclude>
+	  <ClInclude Include="Backpack.h">
+		  <Filter>Core\Client\Objects\items &amp; weapons\Outfit</Filter>
+	  </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -11123,6 +11126,9 @@
     <ClCompile Include="ui\UIGameTutorialVideoItem.cpp">
       <Filter>UI\Tutorial</Filter>
     </ClCompile>
+	  <ClCompile Include="Backpack.cpp">
+		  <Filter>Core\Client\Objects\items &amp; weapons\Outfit</Filter>
+	  </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="graph_abstract.h">

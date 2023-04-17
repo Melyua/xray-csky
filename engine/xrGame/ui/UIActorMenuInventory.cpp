@@ -43,7 +43,7 @@ void CUIActorMenu::InitInventoryMode()
 	m_pInventoryKnifeList->Show			(true);
 	m_pInventoryBinocularList->	Show	(true);
 	m_pInventoryTorchList->Show			(true);
-	
+	m_pInventoryBackpackList->Show		(true);
 	m_RightDelimiter->Show				(false);
 	m_clock_value->Show					(true);
 
@@ -235,6 +235,7 @@ void CUIActorMenu::OnInventoryAction(PIItem pItem, u16 action_type)
 		m_pInventoryKnifeList,
 		m_pInventoryBinocularList,
 		m_pInventoryTorchList,
+		m_pInventoryBackpackList,
 		m_pInventoryBagList,
 		m_pTradeActorBagList,
 		m_pTradeActorList,
@@ -391,6 +392,7 @@ void CUIActorMenu::InitInventoryContents(CUIDragDropListEx* pBagList)
 	InitCellForSlot				(KNIFE_SLOT);
 	InitCellForSlot				(APPARATUS_SLOT);
 	InitCellForSlot				(TORCH_SLOT);
+	InitCellForSlot				(BACKPACK_SLOT);
 
 	curr_list					= m_pInventoryBeltList;
 	TIItemContainer::iterator itb = m_pActorInvOwner->inventory().m_belt.begin();
@@ -622,6 +624,9 @@ CUIDragDropListEx* CUIActorMenu::GetSlotList(u32 slot_idx)
 
 		case TORCH_SLOT:
 			return m_pInventoryTorchList;
+
+		case BACKPACK_SLOT:
+			return m_pInventoryBackpackList;
 
 		case GRENADE_SLOT://fake
 			if ( m_currMenuMode == mmTrade )

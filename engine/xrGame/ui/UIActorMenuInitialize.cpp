@@ -100,6 +100,7 @@ void CUIActorMenu::Construct()
 	m_pInventoryKnifeList		= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_knife", this);
 	m_pInventoryBinocularList	= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_binocular", this);
 	m_pInventoryTorchList		= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_torch", this);
+	m_pInventoryBackpackList	= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_backpack", this);
 	m_pTradeActorBagList		= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_actor_trade_bag", this);
 	m_pTradeActorList			= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_actor_trade", this);
 	m_pTradePartnerBagList		= UIHelper::CreateDragDropListEx(uiXml, "dragdrop_partner_bag", this);
@@ -189,6 +190,7 @@ void CUIActorMenu::Construct()
 	BindDragDropListEvents				(m_pInventoryKnifeList);
 	BindDragDropListEvents				(m_pInventoryBinocularList);
 	BindDragDropListEvents				(m_pInventoryTorchList);
+	BindDragDropListEvents				(m_pInventoryBackpackList);
 	BindDragDropListEvents				(m_pInventoryBagList);
 	BindDragDropListEvents				(m_pTradeActorBagList);
 	BindDragDropListEvents				(m_pTradeActorList);

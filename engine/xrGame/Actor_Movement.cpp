@@ -650,6 +650,8 @@ float CActor::MaxWalkWeight() const
 	return max_w;
 }
 
+#include "Backpack.h"
+
 float CActor::get_additional_weight() const
 {
 	float res = 0.0f ;
@@ -668,5 +670,12 @@ float CActor::get_additional_weight() const
 			res			+= (*it)->AdditionalInventoryWeight();
 		}
 	}
+
+	CBackpack* backpack = smart_cast<CBackpack*>(inventory().ItemFromSlot(BACKPACK_SLOT));
+	if (backpack)
+	{
+		res += backpack->AdditionalInventoryWeight();
+	}
+
 	return res;
 }
