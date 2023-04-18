@@ -17,6 +17,9 @@
 
 using namespace luabind;
 
+bool g_block_all_except_movement;
+extern bool g_actor_allow_ladder;
+
 
 CUISequencer* g_tutorial = NULL;
 CUISequencer* g_tutorial2 = NULL;
@@ -33,6 +36,26 @@ void start_tutorial(LPCSTR name)
 	if(g_tutorial2)
 		g_tutorial->m_pStoredInputReceiver = g_tutorial2->m_pStoredInputReceiver;
 
+}
+
+void block_all_except_movement(bool b)
+{
+	g_block_all_except_movement = b;
+}
+
+bool only_movement_allowed()
+{
+	return g_block_all_except_movement;
+}
+
+void set_actor_allow_ladder(bool b)
+{
+	g_actor_allow_ladder = b;
+}
+
+bool actor_allow_ladder()
+{
+	return g_actor_allow_ladder;
 }
 
 LPCSTR translate_string(LPCSTR str)
@@ -114,7 +137,12 @@ void game_sv_GameState::script_register(lua_State *L)
 
 	def("start_tutorial",		&start_tutorial),
 	def("has_active_tutorial",	&has_active_tutotial),
-	def("translate_string",		&translate_string)
+	def("translate_string",		&translate_string),
+
+			def("only_allow_movekeys", block_all_except_movement),
+			def("only_movekeys_allowed", only_movement_allowed),
+			def("set_actor_allow_ladder", set_actor_allow_ladder),
+			def("actor_ladder_allowed", actor_allow_ladder)
 
 	];
 	
