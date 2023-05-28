@@ -182,6 +182,10 @@ protected:
 	shared_str		m_sSilencerName;
 	shared_str		m_sGrenadeLauncherName;
 
+
+
+	shared_str m_sWpn_scope_bone;
+
 	//смещение иконов апгрейдов в инвентаре
 	int	m_iScopeX, m_iScopeY;
 	int	m_iSilencerX, m_iSilencerY;

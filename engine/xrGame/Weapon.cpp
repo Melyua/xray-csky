@@ -205,6 +205,10 @@ void CWeapon::ForceUpdateFireParticles()
 	}
 }
 
+LPCSTR wpn_scope_def_bone = "wpn_scope";
+
+
+
 void CWeapon::Load		(LPCSTR section)
 {
 	inherited::Load					(section);
@@ -415,6 +419,11 @@ void CWeapon::Load		(LPCSTR section)
 		m_iGrenadeLauncherX = pSettings->r_s32(section,"grenade_launcher_x");
 		m_iGrenadeLauncherY = pSettings->r_s32(section,"grenade_launcher_y");
 	}
+
+	if (pSettings->line_exist(section, "scope_bone"))
+		m_sWpn_scope_bone = pSettings->r_string(section, "scope_bone");
+	else
+		m_sWpn_scope_bone = wpn_scope_def_bone;
 
 	InitAddons();
 	if(pSettings->line_exist(section,"weapon_remove_time"))
@@ -1184,15 +1193,15 @@ void CWeapon::UpdateHUDAddonsVisibility()
 
 	if(ScopeAttachable())
 	{
-		HudItemData()->set_bone_visible(wpn_scope, IsScopeAttached() );
+		HudItemData()->set_bone_visible(m_sWpn_scope_bone, IsScopeAttached() );
 	}
 
 	if(m_eScopeStatus==ALife::eAddonDisabled )
 	{
-		HudItemData()->set_bone_visible(wpn_scope, FALSE, TRUE );
+		HudItemData()->set_bone_visible(m_sWpn_scope_bone, FALSE, TRUE );
 	}else
 		if(m_eScopeStatus==ALife::eAddonPermanent)
-			HudItemData()->set_bone_visible(wpn_scope, TRUE, TRUE );
+			HudItemData()->set_bone_visible(m_sWpn_scope_bone, TRUE, TRUE );
 
 	if(SilencerAttachable())
 	{
@@ -1228,7 +1237,7 @@ void CWeapon::UpdateAddonsVisibility()
 
 	pWeaponVisual->CalculateBones_Invalidate				();
 
-	bone_id = pWeaponVisual->LL_BoneID					(wpn_scope);
+	bone_id = pWeaponVisual->LL_BoneID					(m_sWpn_scope_bone);
 	if(ScopeAttachable())
 	{
 		if(IsScopeAttached())
